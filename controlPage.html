@@ -27,6 +27,7 @@
             divTemplate.data("id", index);
             divTemplate.find(".name").text(light["name"]);
             light["state"]["on"] == true ? divTemplate.find(".toggleState").click() : divTemplate.find(".toggleState");
+            divTemplate.find(".brightnessSlider").val(light["state"]["bri"]);
             $("#lightWrapper").append(divTemplate);
             console.log(index + ": " + JSON.stringify(light));
           });
@@ -51,6 +52,14 @@
         }
         setLightState($(this).parent().data("id"), lightState);
       });
+
+      $(document).on("input", ".brightnessSlider", function (e) {
+        var lightState = {"bri": null};
+        var brightness = parseInt($(this).val());
+        lightState["bri"] = brightness;
+        setLightState($(this).parent().data("id"), lightState);
+      });
+
     });
   </script>
 </head>
@@ -61,6 +70,9 @@
       <span class="name">Light</span>
       <br />
       <input class="toggleState" type="checkbox" />
+      <br />
+      <input class="brightnessSlider" type="range" min="0" max="254" step="1"/>
+      <label class="sliderVal"></label>
     </div>
   </div>
 </body>
