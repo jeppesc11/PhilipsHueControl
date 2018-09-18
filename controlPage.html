@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Philips Hue Control</title>
+  <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      var bridgeInternalIpAddress = "Your Bridge URL";
+      var apiKey = "Your Api Key";
+      var url = "http://" + bridgeInternalIpAddress + "/api/" + apiKey;
+      
+      // On page load
+      $( document ).ready(function() {
+        loadLightsFromBridge ();
+      });
+
+      // Method to load the lights connected to the bridge
+      function loadLightsFromBridge () {
+        $.getJSON(url, function (fetchedXML) {
+          var lights = fetchedXML["lights"];
+          $.each(lights, function (index, light) {
+            var divTemplate = $("#lightDiv").clone();
+            divTemplate.removeAttr("id");
+            divTemplate.css("display", "block");
+            divTemplate.data("id", index);
+            divTemplate.find(".name").text(light["name"]);
+            light["state"]["on"] == true ? divTemplate.find(".toggleState").click() : divTemplate.find(".toggleState");
+            $("#lightWrapper").append(divTemplate);
+            console.log(index + ": " + JSON.stringify(light));
+          });
+        });
+      };
+
+      var setLightState = function (lightId, lightState) {
+        var apiUrl = url + "/lights/" + lightId + "/state";
+        $.ajax({
+          url: apiUrl,
+          type: "PUT",
+          data: JSON.stringify(lightState)
+        });
+      };
+
+      $(document).on("input", ".toggleState", function (e) {
+        var lightState = {"on": null};
+        if ($(this).is(':checked')) {
+          lightState["on"] = true;
+        } else {
+          lightState["on"] = false;
+        }
+        setLightState($(this).parent().data("id"), lightState);
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div id="lightWrapper">
+    <div id="lightDiv" class="light" style="display: none;">
+      <span class="name">Light</span>
+      <br />
+      <input class="toggleState" type="checkbox" />
+    </div>
+  </div>
+</body>
+
+</html>
