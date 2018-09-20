@@ -54,9 +54,7 @@
       });
 
       $(document).on("input", ".brightnessSlider", function (e) {
-        var lightState = {"bri": null};
-        var brightness = parseInt($(this).val());
-        lightState["bri"] = brightness;
+        var lightState = {"bri": parseInt($(this).val())};
         setLightState($(this).parent().data("id"), lightState);
       });
 
